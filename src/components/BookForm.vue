@@ -1,4 +1,4 @@
-<!-- <template>
+<template>
     <Form @submit="submitBook" :validation-schema="bookFormSchema">
         <div class="form-group">
             <label for="name">Tên</label>
@@ -37,6 +37,7 @@
         </div>
     </Form>
 </template>
+<!--
 <script>
 import * as yup from "yup";
 import { Form, Field, ErrorMessage } from "vee-validate";

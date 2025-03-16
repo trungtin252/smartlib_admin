@@ -42,6 +42,7 @@
                 </tr>
             </tbody>
         </table>
+        <button type="button" class="btn btn-info">Thêm sách + </button>
         <Pagination :totalPages="totalPages" :currentPage="currentPage" @changePage="changePage" />
     </div>
 </template>
@@ -144,7 +145,8 @@ onMounted(() => refesh());
     overflow-x: auto;
 }
 
-.btn {
+.btn-outline-info,
+.btn-outline-danger {
     --bs-btn-padding-y: .2px;
     --bs-btn-padding-x: .5rem;
     --bs-btn-font-size: .75rem;

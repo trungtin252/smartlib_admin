@@ -1,14 +1,16 @@
 <template>
+
     <div class="header bg-light">
         <div class="container-fluid bg-light">
+
             <nav class="navbar navbar-expand-lg navbar-light ">
+
                 <!-- Logo -->
                 <a class="navbar-brand logo-container" @click="goToDashboard">
                     <img src="../../assets/logo.svg" alt="SmartLib_logo" id="logo" />
                 </a>
 
 
-                <!-- Menu -->
                 <div v-if="isLogin" class="collapse navbar-collapse menu-items" id="navbarNav">
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
@@ -29,7 +31,8 @@
                                 <span>Xét duyệt yêu cầu</span>
                             </a>
                         </li>
-
+                    </ul>
+                    <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
                             <profile-header></profile-header>
                         </li>
@@ -44,6 +47,7 @@
 import router from '@/router/index.router';
 import ProfileHeader from './ProfileHeader.vue';
 import { getCookie } from '@/utils/cookie';
+import SideBar from './Hook/SideBar.vue';
 
 const isLogin = getCookie("staffId");
 
