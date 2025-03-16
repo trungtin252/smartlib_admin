@@ -1,7 +1,6 @@
 <script setup>
 import Header from "./components/layouts/Header.vue"
 import Footer from "./components/layouts/Footer.vue";
-import { onMounted, ref } from "vue";
 
 </script>
 

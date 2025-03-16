@@ -43,8 +43,9 @@
 <script setup>
 import router from '@/router/index.router';
 import ProfileHeader from './ProfileHeader.vue';
+import { getCookie } from '@/utils/cookie';
 
-const isLogin = localStorage.getItem("isAuthenticated");
+const isLogin = getCookie("staffId");
 
 const goToDashboard = () => {
     router.push('/');

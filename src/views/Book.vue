@@ -1,5 +1,10 @@
 <template>
     <h3>Danh sách sách</h3>
+    <div class="search_container">
+        <SearchBook @changeTest="changeTest" :categories="categories"></SearchBook>
+        <Sort v-model:sortValue="sortValue"></Sort>
+    </div>
+
     <div class="table-container">
         <table class="table table-responsive-lg table-striped table-hover table-bordered">
             <thead>
@@ -12,54 +17,125 @@
                     <th scope="col">Số trang</th>
                     <th scope="col">Năm xuất bản</th>
                     <th scope="col">Tác giả</th>
-                    <th scope="col">Giá</th>
+                    <th scope="col">Giá (VND) </th>
                     <th scope="col" class="check">Thao tác</th>
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="(book, index) in books" :key="book._id.$oid">
-                    <td>{{ index + 1 }}</td>
-                    <td>{{ book.title }}</td>
-                    <td>{{ book.inLibrary }}</td>
+                <tr v-for="(book, index) in books" :key="book._id">
+                    <td><b>{{ book.maSach }}</b></td>
+                    <td><b>{{ book.tieuDe }}</b></td>
+                    <td>{{ book.soLuongTrongThuVien }}</td>
                     <td>
-                        <img :src="book.image" alt="Book Image" width="50" height="50" />
+                        <img :src="book.hinhAnh" alt="Book Image" width="50" height="50" />
                     </td>
-                    <td>{{ book.category.$oid }}</td>
-                    <td>{{ book.pageCount }}</td>
-                    <td>{{ new Date(book.publishYear.$date).getFullYear() }}</td>
-                    <td>{{ book.author.$oid }}</td>
-                    <td>{{ book.price.toLocaleString() }} VND</td>
+                    <td></td>
+                    <td>{{ book.soTrang }}</td>
+                    <td>{{ book.namXuatBan }}</td>
+                    <td>{{ book.tacGia.ten }}</td>
+                    <td> {{ book.gia }}</td>
                     <td class="check">
                         <button type="button" class="btn btn-outline-info btn-sm">Chi tiết</button>
                         <button type="button" class="btn btn-outline-danger btn-sm"
-                            @click="deleteBook(book._id.$oid)">Xóa</button>
+                            @click="deleteBook(book._id)">Xóa</button>
                     </td>
                 </tr>
             </tbody>
         </table>
+        <Pagination :totalPages="totalPages" :currentPage="currentPage" @changePage="changePage" />
     </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import Pagination from '@/components/Hooks/Pagination.vue';
+import SearchBook from '@/components/Hooks/SearchBook.vue';
+import Sort from '@/components/Hooks/Sort.vue';
+import bookService from '@/service/book.service';
+import categoryService from '@/service/category.service';
+import { showComfirm, showErrorDeleteBook } from '@/utils/Alert';
+import { computed, onMounted, ref, watch } from 'vue';
 
-const books = ref([
-    {
-        "_id": { "$oid": "66c8a0bdfe7fed000a3d7c6b" },
-        "title": "Create GUI Applications with Python & Qt6",
-        "inLibrary": 56,
-        "image": "http://localhost:3000/api/upload/1725602584235.jpg",
-        "category": { "$oid": "66c895f2d9518e22fa4ccb40" },
-        "pageCount": 12031,
-        "publishYear": { "$date": "1970-01-01T00:00:02.000Z" },
-        "author": { "$oid": "66cc81b85b8e4dbc790c245f" },
-        "price": 10000
+const books = ref([]);
+const categories = ref([]);
+const currentPage = ref(1);
+const totalPages = ref(1);
+const searchValue = ref({});
+const sortValue = ref('maSach');
+
+// Lay sach
+const getAllBooks = async (page, query) => {
+    try {
+        const response = await bookService.getAll(page, 6, query, sortValue.value);
+        totalPages.value = response.totalPages;
+        books.value = response.books;
+    } catch (error) {
+        console.error('Lỗi khi lấy sách:', error);
+        return [];
     }
-]);
-
-const deleteBook = (id) => {
-    books.value = books.value.filter(book => book._id.$oid !== id);
 };
+
+const filteredBook = computed(() => {
+    console.log(sortValue.value);
+});
+
+
+watch(sortValue, (newValue) => {
+    refesh();
+}
+)
+
+// Lay danh muc
+const getAllCategory = async () => {
+    try {
+        const response = await categoryService.getAll();
+        categories.value = response;
+    } catch (error) {
+        console.error('Lỗi khi lấy danh mục:', error);
+        return [];
+    }
+}
+
+const changePage = async (page) => {
+    currentPage.value = page;
+    await getAllBooks(page, {})
+};
+
+const changeTest = (check) => {
+    let test = {}
+    if (check.type == 'title') {
+        test = {
+            title: check.query,
+            category: check.category
+        }
+    } else {
+        test = {
+            author: check.query,
+            category: check.category
+        }
+    }
+    searchValue.value = test;
+    getAllBooks(1, searchValue.value)
+}
+
+const deleteBook = async (id) => {
+    try {
+        const result = await showComfirm();
+        if (result.isConfirmed) {
+            const check = await bookService.deleteBook(id);
+        }
+        refesh();
+    } catch (error) {
+        showErrorDeleteBook();
+    }
+
+};
+
+const refesh = async () => {
+    getAllBooks(1, searchValue.value);
+    getAllCategory();
+}
+onMounted(() => refesh());
+
 </script>
 
 <style scoped>
@@ -83,5 +159,9 @@ img {
 
 .check {
     width: 150px;
+}
+
+.search_container {
+    width: 70%;
 }
 </style>

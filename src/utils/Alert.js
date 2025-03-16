@@ -24,3 +24,31 @@ export const showComfirm = async () => {
     denyButtonText: `Hủy`,
   });
 };
+
+export const showNoteDeniBorrow = async () => {
+  return Swal.fire({
+    title: "Nhập vào lý do từ chối yêu cầu",
+    input: "text",
+    inputAttributes: {
+      autocapitalize: "off",
+      autocomplete: "off",
+    },
+    showCancelButton: true,
+    confirmButtonText: "Xác nhận",
+    showLoaderOnConfirm: true,
+    preConfirm: (inputValue) => {
+      if (!inputValue) {
+        Swal.showValidationMessage("Bạn phải nhập vào lý do từ chối yêu cầu");
+      }
+      return inputValue; // Return input value to .then()
+    },
+  });
+};
+
+export const showErrorDeleteBook = () => {
+  Swal.fire({
+    icon: "error",
+    title: "Xóa thất bại",
+    text: "Không thể xóa sách do sách nằm trong danh sách yêu cầu",
+  });
+};

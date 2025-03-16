@@ -11,20 +11,22 @@
                             <div data-mdb-input-init class="form-outline mb-4"
                                 style="display: flex; flex-direction: column; align-items:start;">
                                 <label class="form-label" for="typeEmailX-2">Mã nhân viên</label>
-                                <input type="email" id="typeEmailX-2" class="form-control form-control-lg" />
+                                <input type="email" id="typeEmailX-2" class="form-control form-control-lg"
+                                    v-model="staffId" />
 
                             </div>
 
                             <div data-mdb-input-init class="form-outline mb-4"
                                 style="display: flex; flex-direction: column; align-items:start;">
                                 <label class="form-label" for="typePasswordX-2">Mật khẩu</label>
-                                <input type="password" id="typePasswordX-2" class="form-control form-control-lg" />
+                                <input type="password" id="typePasswordX-2" class="form-control form-control-lg"
+                                    v-model="password" />
 
                             </div>
 
 
                             <button data-mdb-button-init data-mdb-ripple-init class="btn btn-primary btn-lg btn-block"
-                                type="submit" @click="setisAuthenticated">Đăng nhập</button>
+                                type="submit" @click="login()">Đăng nhập</button>
 
                             <hr class="my-4">
 
@@ -45,15 +47,55 @@
 
 <script setup>
 import router from '@/router/index.router';
-import { showSuccessLogin } from '@/utils/Alert';
+import loginService from '@/service/login.service';
+import { showErrorLogin, showSuccessLogin } from '@/utils/Alert';
+import { setCookie } from '@/utils/cookie';
+import { generateToken } from '@/utils/generateToken';
+import { computed, ref } from 'vue';
+
+const staffId = ref('');
+const password = ref('');
+const isAuthenticated = ref(false);;
+
+// Computed properties for validation
+const isFormValid = computed(() => {
+    return staffId.value && staffId.value.length >= 1
+});
+
+const login = async () => {
+
+    if (!isFormValid.value) {
+        return;
+    }
+
+    const infoLogin = {
+        staffID: staffId.value,
+        password: password.value
+    };
+
+    try {
+        const loginResult = await loginService.Login(infoLogin);
+        console.log(loginResult);
+        if (loginResult) {
+            setisAuthenticated(loginResult._id);
+        } else {
+            showErrorLogin();
+        }
+    } catch (error) {
+        showErrorLogin();
+    }
+};
 
 
-const setisAuthenticated = () => {
-    localStorage.setItem("isAuthenticated", "true")
+const setisAuthenticated = (userId) => {
+    const token = generateToken();
+    setCookie("token", token, 1);
+    setCookie("staffId", userId, 1);
     router.push("/profile");
     showSuccessLogin();
-    setTimeout(() => window.location.reload(), 1200)
-}
+
+    setTimeout(() => window.location.reload(), 1000);
+};
 
 </script>
 

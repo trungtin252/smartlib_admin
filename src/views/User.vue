@@ -1,56 +1,58 @@
 <template>
-    <table class="table-responsive-lg" style="margin: 40px auto;">
-        <table class="table table-striped table-hover table-bordered ">
-            <thead>
-                <tr>
-                    <th scope="col ">Mã người dùng</th>
-                    <th scope="col">Họ</th>
-                    <th scope="col">Tên</th>
-                    <th scope="col">Vai trò</th>
-                    <th scope="col">Ngày sinh</th>
-                    <th scope="col">Địa chỉ</th>
-                    <th scope="col">Số điện thoại</th>
-                    <th scope="col">Thao tác</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr v-for="(user, index) in users" :key="user._id.$oid">
-                    <td>{{ index + 1 }}</td>
-                    <td>{{ user.lastName }}</td>
-                    <td>{{ user.firstName }}</td>
-                    <td>{{ user.roles }}</td>
-                    <td>{{ new Date(user.birthdate.$date).toLocaleDateString() }}</td>
-                    <td>{{ user.address }}</td>
-                    <td>{{ user.phone }}</td>
-                    <td>
-                        <button type="button" class="btn btn-outline-info btn-sm">Chi tiết</button>
-                        <button type="button" class="btn btn-outline-danger btn-sm"
-                            @click="deleteUser(user._id.$oid)">Xóa</button>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+    <table class="table table-striped table-hover table-bordered ">
+        <thead>
+            <tr>
+                <th scope="col ">Mã người dùng</th>
+                <th scope="col">Họ</th>
+                <th scope="col">Tên</th>
+                <th scope="col">Vai trò</th>
+                <th scope="col">Ngày sinh</th>
+                <th scope="col">Địa chỉ</th>
+                <th scope="col">Số điện thoại</th>
+                <th scope="col">Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="(user, index) in Users" :key="user._id">
+                <td>{{ user.maDocGia }}</td>
+                <td>{{ user.hoTenDem }}</td>
+                <td>{{ user.ten }}</td>
+                <td><span class="badge text-bg-warning">
+                        {{ user.vaiTro }}
+                    </span></td>
+                <td>{{ new Date(user.ngaySinh).toLocaleDateString() }}</td>
+                <td>{{ user.diaChi }}</td>
+                <td>{{ user.soDienThoai }}</td>
+                <td>
+                    <button type="button" class="btn btn-outline-info btn-sm">Chi tiết</button>
+                    <button type="button" class="btn btn-outline-danger btn-sm"
+                        @click="deleteUser(user._id.$oid)">Xóa</button>
+                </td>
+            </tr>
+        </tbody>
     </table>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import userService from '@/service/user.service';
+import { onMounted, ref } from 'vue';
 
-const users = ref([
-    {
-        "_id": { "$oid": "66c892e751e4c3a583236598" },
-        "firstName": "Min",
-        "lastName": "Tram",
-        "roles": "admin",
-        "birthdate": { "$date": "2004-10-04T00:00:00.000Z" },
-        "address": "Soc Trang",
-        "phone": "0123456789"
+const Users = ref([]);
+
+// const deleteUser = (id) => {
+//     users.value = users.value.filter(user => user._id.$oid !== id);
+// };
+
+const getUser = async () => {
+    try {
+        const response = await userService.getAllUser();
+        console.log(response);
+        Users.value = response;
+    } catch (error) {
+        console.log(error);
     }
-]);
-
-const deleteUser = (id) => {
-    users.value = users.value.filter(user => user._id.$oid !== id);
-};
+}
+onMounted(getUser);
 </script>
 
 <style scoped>
