@@ -1,0 +1,255 @@
+<template>
+    <Form @submit="submitBook" :validation-schema="bookFormSchema">
+        <div v-if="props.book" class="form-group">
+            <label for="id">Mã sách</label>
+            <Field name="id" type="text" class="form-control" v-model="bookLocal.maSach" disabled />
+            <ErrorMessage name="id" class="error-feedback" />
+        </div>
+        <div class="form-group">
+            <label for="name">Tên sách</label>
+            <Field name="name" type="text" class="form-control" v-model="bookLocal.tieuDe" />
+            <ErrorMessage name="name" class="error-feedback" />
+        </div>
+        <div class="form-group">
+            <label for="desc">Mô tả</label>
+            <Field name="desc" as="textarea" class="form-control" v-model="bookLocal.moTa" rows="4" />
+            <ErrorMessage name="desc" class="error-feedback" />
+        </div>
+        <div class="form-group">
+            <label for="numberInLib">Số lượng trong thư viện</label>
+            <Field name="numberInLib" type="number" class="form-control" v-model="bookLocal.soLuongTrongThuVien" />
+            <ErrorMessage name="numberInLib" class="error-feedback" />
+        </div>
+        <div class="form-group">
+            <label for="PageCount">Số trang</label>
+            <Field name="PageCount" type="number" class="form-control" v-model="bookLocal.soTrang" />
+            <ErrorMessage name="numberInLib" class="error-feedback" />
+        </div>
+        <div class="form-group">
+            <label for="publisher">Nhà xuất bản</label>
+            <Field name="publisher" as="select" class="form-control" v-model="bookLocal.nhaXuatBan">
+                <option value="" disabled>Chọn nhà xuất bản</option>
+                <option v-for="publisher in publishers" :key="publisher._id" :value="publisher._id">
+                    {{ publisher.ten }}
+                </option>
+            </Field>
+            <!-- <ErrorMessage name="numberInLib" class="error-feedback" /> -->
+        </div>
+        <div class="form-group">
+            <label for="pushlisYear">Năm xuất bản</label>
+            <Field name="pushlisYear" type="text" class="form-control" v-model="bookLocal.namXuatBan" />
+            <ErrorMessage name="pushlisYear" class="error-feedback" />
+        </div>
+        <div class="form-group">
+            <label for="author">Tác giả</label>
+            <Field name="author" as="select" class="form-control" v-model="bookLocal.tacGia">
+                <option value="" disabled>Chọn tác giả </option>
+                <option v-for="author in authors" :key="author._id" :value="author._id">
+                    {{ author.ten }}
+                </option>
+            </Field>
+            <!-- <ErrorMessage name="numberInLib" class="error-feedback" />  -->
+        </div>
+        <div class="form-group">
+            <label for="category">Thể loại</label>
+            <Field name="category" as="select" class="form-control" v-model="bookLocal.theLoai">
+                <option value="">Chọn thể loại </option>
+                <option v-for="category in categories" :key="category._id" :value="category._id">
+                    {{ category.ten }}
+                </option>
+            </Field>
+            <!-- <ErrorMessage name="numberInLib" class="error-feedback" /> -->
+        </div>
+        <div class="form-group">
+            <label for="price">Giá</label>
+            <Field name="price" type="number" class="form-control" v-model="bookLocal.gia" />
+            <!-- <ErrorMessage name="numberInLib" class="error-feedback" />  -->
+        </div>
+        <div class="form-group">
+            <label for="image">Hình ảnh</label>
+            <input type="file" class="form-control" @change="handleFileUpload" accept="image/*" />
+
+            <!-- Hiển thị ảnh xem trước -->
+            <div v-if="previewImage" class="preview-container">
+                <img :src="previewImage" alt="Xem trước hình ảnh" class="preview-image" />
+            </div>
+
+            <ErrorMessage name="image" class="error-feedback" />
+        </div>
+
+        <div class="form-group">
+            <button class="btn btn-primary">Lưu</button>
+            <button v-if="bookLocal._id" type="button" class="ml-2 btn btn-danger" @click="deleteBook">
+                Xóa
+            </button>
+            <button type="button" class="ml-2 btn btn-danger" @click="cancel">
+                Thoát
+            </button>
+        </div>
+    </Form>
+</template>
+
+<script setup>
+import { ref, defineProps, defineEmits, onMounted, watch } from "vue";
+import * as yup from "yup";
+import { Form, Field, ErrorMessage } from "vee-validate";
+import { useRouter } from "vue-router";
+import categoryService from "@/service/category.service";
+import authorService from "@/service/author.service";
+import publisherService from "@/service/publisher.service";
+
+const bookLocal = ref('');
+const authors = ref([]);
+const publishers = ref([]);
+const categories = ref([]);
+const previewImage = ref("");
+const selectedFile = ref(null);
+
+const props = defineProps({
+    book: { type: Object, required: true }
+});
+
+watch(() => props.book, (newBook) => {
+    if (newBook) {
+        bookLocal.value = { ...newBook };
+        previewImage.value = newBook.hinhAnh
+    }
+}, { immediate: true });
+
+
+const emit = defineEmits(["submit:book", "delete:book"]);
+const router = useRouter();
+
+const bookFormSchema = yup.object().shape({
+    name: yup
+        .string()
+        .required("Tên phải có giá trị."),
+    numberInLib: yup
+        .number().min(1)
+    // address: yup.string().max(100, "Địa chỉ tối đa 100 ký tự."),
+    // phone: yup
+    //     .string()
+    //     .matches(
+    //         /((09|03|07|08|05)+([0-9]{8})\b)/g,
+    //         "Số điện thoại không hợp lệ."
+    //     ),
+});
+
+
+const submitBook = () => {
+    const formData = new FormData();
+
+    // Thêm dữ liệu sách vào formData
+    for (const key in bookLocal.value) {
+        formData.append(key, bookLocal.value[key]);
+    }
+
+    // Nếu có file ảnh mới, thêm vào formData
+    if (selectedFile.value) {
+        formData.append("hinhAnh", selectedFile.value);
+    }
+
+    emit("submit:book", formData);
+};
+
+const deleteBook = () => {
+    emit("delete:book", bookLocal.value._id);
+};
+
+const cancel = () => {
+    const reply = window.confirm('You have unsaved changes! Do you want to leave?');
+    if (reply) {
+        router.push({ name: "book" });
+    }
+};
+
+const getCategory = async () => {
+    categories.value = await categoryService.getAll();
+}
+
+const getAuthor = async () => {
+    authors.value = await authorService.getAll();
+
+}
+
+const getPublisher = async () => {
+    publishers.value = await publisherService.getAll();
+}
+
+const getInfo = () => {
+    getAuthor();
+    getCategory();
+    getPublisher();
+}
+
+const handleFileUpload = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+        selectedFile.value = file;
+
+        // Hiển thị ảnh xem trước
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            previewImage.value = e.target.result;
+        };
+        reader.readAsDataURL(file);
+    }
+};
+
+onMounted(() => getInfo())
+</script>
+<style scoped>
+label {
+    display: block;
+    margin-top: 10px;
+}
+
+.card-container.card {
+    max-width: 400px !important;
+    padding: 40px 40px;
+}
+
+.card {
+    background-color: #f7f7f7;
+    padding: 20px 25px 30px;
+    margin: 0 auto 25px;
+    margin-top: 50px;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
+    -moz-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+    -webkit-box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+    box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.3);
+}
+
+.profile-img-card {
+    width: 96px;
+    height: 96px;
+    margin: 0 auto 10px;
+    display: block;
+    -moz-border-radius: 50%;
+    -webkit-border-radius: 50%;
+    border-radius: 50%;
+}
+
+.error-feedback {
+    color: red;
+}
+
+.preview-container {
+    margin-top: 10px;
+    width: 150px;
+    height: 150px;
+    border: 1px solid #ddd;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+}
+
+.preview-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+</style>

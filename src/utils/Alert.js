@@ -52,3 +52,19 @@ export const showErrorDeleteBook = () => {
     text: "Không thể xóa sách do sách nằm trong danh sách yêu cầu",
   });
 };
+
+export const showSuccessDelete = () => {
+  Swal.fire({
+    title: "Xóa thành công",
+    text: "Xóa sách thành công",
+    icon: "success",
+  });
+};
+
+export const showSuccessUpdateBook = () => {
+  Swal.fire({
+    title: "Cập nhật thành công ",
+    text: "Sách được cập nhật thành công",
+    icon: "success",
+  });
+};

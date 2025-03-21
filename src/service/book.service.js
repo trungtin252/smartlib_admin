@@ -22,9 +22,26 @@ class BookService {
     return (await this.api.delete(`/${id}`)).data;
   }
 
-  //   async create(data) {
-  //     return (await this.api.post("/", data)).data;
-  //   }
+  async getBookById(id) {
+    return (await this.api.get(`/${id}`)).data;
+  }
+
+  async createBook(data) {
+    return (
+      await this.api.post("/", data, {
+        headers: { "Content-Type": "multipart/form-data" },
+      })
+    ).data;
+  }
+
+  async update(id, data) {
+    return (
+      await this.api.put(`/${id}`, data, {
+        headers: { "Content-Type": "multipart/form-data" },
+      })
+    ).data;
+  }
+
   //   async deleteAll() {
   //     return (await this.api.delete("/")).data;
   //   }

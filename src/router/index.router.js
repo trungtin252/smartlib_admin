@@ -6,6 +6,9 @@ import User from "@/views/User.vue";
 import Review from "@/views/Review.vue";
 import Login from "@/views/Login.vue";
 import { getCookie } from "@/utils/cookie";
+import BookEdit from "@/components/layouts/BookEdit.vue";
+import NotFound from "@/views/NotFound.vue";
+import BookList from "@/components/layouts/BookList.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -27,6 +30,20 @@ const router = createRouter({
       name: "book",
       component: Book,
       meta: { requiresAuth: true },
+      children: [
+        {
+          path: ":id",
+          name: "book.edit",
+          component: BookEdit,
+          props: true,
+        },
+        {
+          path: "add",
+          name: "book.add",
+          component: BookEdit,
+          props: true,
+        },
+      ],
     },
     {
       path: "/user",
@@ -41,6 +58,11 @@ const router = createRouter({
       meta: { requiresAuth: true },
     },
     { path: "/login", name: "login", component: Login },
+    {
+      path: "/:pathMatch(.*)*",
+      name: "notfound",
+      component: NotFound,
+    },
   ],
 });
 
