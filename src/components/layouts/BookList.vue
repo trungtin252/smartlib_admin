@@ -1,7 +1,7 @@
 <template>
     <h3>Danh sách sách</h3>
     <div class="search_container">
-        <SearchBook @changeTest="changeTest" :categories="categories"></SearchBook>
+        <SearchBook @changeSeach="changeSeach" :categories="categories"></SearchBook>
         <Sort v-model:sortValue="sortValue"></Sort>
     </div>
 
@@ -13,8 +13,8 @@
                     <th scope="col">Tên sách</th>
                     <th scope="col">Số lượng</th>
                     <th scope="col">Hình ảnh</th>
-                    <th scope="col">Danh mục</th>
-                    <th scope="col">Số trang</th>
+                    <th scope="col">Thể loại</th>
+                    <th scope="col">Ngày thêm</th>
                     <th scope="col">Năm xuất bản</th>
                     <th scope="col">Tác giả</th>
                     <th scope="col">Giá (VND) </th>
@@ -29,8 +29,8 @@
                     <td>
                         <img :src="book.hinhAnh" alt="Book Image" width="50" height="50" />
                     </td>
-                    <td></td>
-                    <td>{{ book.soTrang }}</td>
+                    <td>{{ book.theLoai?.ten || "" }}</td>
+                    <td>{{ formatDate(book.ngayThem) }}</td>
                     <td>{{ book.namXuatBan }}</td>
                     <td>{{ book.tacGia.ten }}</td>
                     <td> {{ book.gia }}</td>
@@ -62,6 +62,7 @@ import bookService from '@/service/book.service';
 import categoryService from '@/service/category.service';
 import { showComfirm, showErrorDeleteBook, showSuccessDelete } from '@/utils/Alert';
 import { computed, onMounted, ref, watch } from 'vue';
+import { formatDate } from '@/utils/fomatDate';
 
 const books = ref([]);
 const categories = ref([]);
@@ -108,20 +109,20 @@ const changePage = async (page) => {
     await getAllBooks(page, {})
 };
 
-const changeTest = (check) => {
-    let test = {}
-    if (check.type == 'title') {
-        test = {
-            title: check.query,
-            category: check.category
+const changeSeach = (seachInput) => {
+    let searchValueTemp = {};
+    if (seachInput.type == 'title') {
+        searchValueTemp = {
+            title: seachInput.query,
+            category: seachInput.category
         }
     } else {
-        test = {
-            author: check.query,
-            category: check.category
+        searchValueTemp = {
+            author: seachInput.query,
+            category: seachInput.category
         }
     }
-    searchValue.value = test;
+    searchValue.value = searchValueTemp;
     getAllBooks(1, searchValue.value)
 }
 

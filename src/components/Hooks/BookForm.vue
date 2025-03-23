@@ -17,38 +17,37 @@
         </div>
         <div class="form-group">
             <label for="numberInLib">Số lượng trong thư viện</label>
-            <Field name="numberInLib" type="number" class="form-control" v-model="bookLocal.soLuongTrongThuVien" />
+            <Field name="numberInLib" type="number" class="form-control" v-model="bookLocal.soLuongTrongThuVien"
+                :min="1" />
             <ErrorMessage name="numberInLib" class="error-feedback" />
         </div>
         <div class="form-group">
-            <label for="PageCount">Số trang</label>
-            <Field name="PageCount" type="number" class="form-control" v-model="bookLocal.soTrang" />
-            <ErrorMessage name="numberInLib" class="error-feedback" />
+            <label for="pageCount">Số trang</label>
+            <Field name="pageCount" type="number" class="form-control" v-model="bookLocal.soTrang" :min="0" />
+            <ErrorMessage name="pageCount" class="error-feedback" />
         </div>
         <div class="form-group">
             <label for="publisher">Nhà xuất bản</label>
             <Field name="publisher" as="select" class="form-control" v-model="bookLocal.nhaXuatBan">
-                <option value="" disabled>Chọn nhà xuất bản</option>
+                <option value="">Chọn nhà xuất bản</option>
                 <option v-for="publisher in publishers" :key="publisher._id" :value="publisher._id">
                     {{ publisher.ten }}
                 </option>
             </Field>
-            <!-- <ErrorMessage name="numberInLib" class="error-feedback" /> -->
         </div>
         <div class="form-group">
             <label for="pushlisYear">Năm xuất bản</label>
             <Field name="pushlisYear" type="text" class="form-control" v-model="bookLocal.namXuatBan" />
-            <ErrorMessage name="pushlisYear" class="error-feedback" />
         </div>
         <div class="form-group">
             <label for="author">Tác giả</label>
             <Field name="author" as="select" class="form-control" v-model="bookLocal.tacGia">
-                <option value="" disabled>Chọn tác giả </option>
+                <option value="">Chọn tác giả </option>
                 <option v-for="author in authors" :key="author._id" :value="author._id">
                     {{ author.ten }}
                 </option>
             </Field>
-            <!-- <ErrorMessage name="numberInLib" class="error-feedback" />  -->
+            <ErrorMessage name="author" class="error-feedback" />
         </div>
         <div class="form-group">
             <label for="category">Thể loại</label>
@@ -58,23 +57,22 @@
                     {{ category.ten }}
                 </option>
             </Field>
-            <!-- <ErrorMessage name="numberInLib" class="error-feedback" /> -->
         </div>
         <div class="form-group">
             <label for="price">Giá</label>
-            <Field name="price" type="number" class="form-control" v-model="bookLocal.gia" />
-            <!-- <ErrorMessage name="numberInLib" class="error-feedback" />  -->
+            <Field name="price" type="number" class="form-control" v-model="bookLocal.gia" :min="0" />
+            <ErrorMessage name="price" class="error-feedback" />
         </div>
         <div class="form-group">
             <label for="image">Hình ảnh</label>
-            <input type="file" class="form-control" @change="handleFileUpload" accept="image/*" />
+            <input name="image" type="file" class="form-control" @change="handleFileUpload" accept="image/*" />
 
             <!-- Hiển thị ảnh xem trước -->
             <div v-if="previewImage" class="preview-container">
                 <img :src="previewImage" alt="Xem trước hình ảnh" class="preview-image" />
             </div>
 
-            <ErrorMessage name="image" class="error-feedback" />
+
         </div>
 
         <div class="form-group">
@@ -109,10 +107,26 @@ const props = defineProps({
     book: { type: Object, required: true }
 });
 
+
 watch(() => props.book, (newBook) => {
-    if (newBook) {
+    if (!!newBook && Object.keys(newBook).length > 0) {
         bookLocal.value = { ...newBook };
+        console.log(bookLocal.value);
         previewImage.value = newBook.hinhAnh
+    } else {
+        bookLocal.value = {
+            tieuDe: "",
+            moTa: "",
+            soLuongTrongThuVien: "",
+            soTrang: "",
+            nhaXuatBan: "",
+            namXuatBan: "",
+            tacGia: "",
+            theLoai: "",
+            gia: "",
+            hinhAnh: ""
+        };
+        previewImage.value = "";
     }
 }, { immediate: true });
 
@@ -121,30 +135,35 @@ const emit = defineEmits(["submit:book", "delete:book"]);
 const router = useRouter();
 
 const bookFormSchema = yup.object().shape({
-    name: yup
-        .string()
-        .required("Tên phải có giá trị."),
+    name: yup.string().required("Tên sách không được để trống"),
     numberInLib: yup
-        .number().min(1)
-    // address: yup.string().max(100, "Địa chỉ tối đa 100 ký tự."),
-    // phone: yup
-    //     .string()
-    //     .matches(
-    //         /((09|03|07|08|05)+([0-9]{8})\b)/g,
-    //         "Số điện thoại không hợp lệ."
-    //     ),
+        .number()
+        .typeError("Số lượng trong thư viện không được bỏ trống")
+        .min(1, "Số lượng phải lớn hơn hoặc bằng 1")
+        .required("Số lượng không được để trống"),
+    pageCount: yup
+        .number()
+        .typeError("Số trang phải là số")
+        .min(0, "Số trang phải lớn hơn hoặc bằng 5")
+        .required("Số trang không được để trống"),
+    author: yup.string().required("Tác giả không được để trống"),
+    price: yup
+        .number()
+        .typeError("Giá phải là số")
+        .min(0, "Giá không được âm")
+        .required("Giá không được để trống"),
 });
+
+
 
 
 const submitBook = () => {
     const formData = new FormData();
 
-    // Thêm dữ liệu sách vào formData
     for (const key in bookLocal.value) {
         formData.append(key, bookLocal.value[key]);
     }
 
-    // Nếu có file ảnh mới, thêm vào formData
     if (selectedFile.value) {
         formData.append("hinhAnh", selectedFile.value);
     }
@@ -234,7 +253,11 @@ label {
 
 .error-feedback {
     color: red;
+    font-size: 14px;
+    margin-top: 5px;
+    display: block;
 }
+
 
 .preview-container {
     margin-top: 10px;

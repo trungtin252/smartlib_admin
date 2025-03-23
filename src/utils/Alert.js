@@ -68,3 +68,11 @@ export const showSuccessUpdateBook = () => {
     icon: "success",
   });
 };
+
+export const showSuccessCreateBook = () => {
+  Swal.fire({
+    title: "Thêm sách thành công ",
+    text: "Sách được thêm thành công",
+    icon: "success",
+  });
+};

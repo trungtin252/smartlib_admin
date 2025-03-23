@@ -1,11 +1,11 @@
 <template>
     <div v-if="props.id" class="page">
-        <h4>Hiệu chỉnh Liên hệ</h4>
+        <h4>Hiệu chỉnh sách</h4>
         <BookForm :book="book" @submit:book="updateBook" @delete:book="deleteBook" />
         <!-- <p>{{ message }}</p> -->
     </div>
     <div v-else class="page">
-        <h4>Thêm mới liên hệ</h4>
+        <h4>Thêm mới sách</h4>
         <BookForm @submit:book="createBook" />
         <!-- <p>{{ message }}</p> -->
     </div>
@@ -17,7 +17,7 @@ import BookForm from '../Hooks/BookForm.vue';
 
 import { ref, onMounted, defineProps } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import { showComfirm, showErrorDeleteBook, showSuccessDelete, showSuccessUpdateBook } from '@/utils/Alert';
+import { showComfirm, showErrorDeleteBook, showSuccessCreateBook, showSuccessDelete, showSuccessUpdateBook } from '@/utils/Alert';
 
 const props = defineProps({
     id: { type: String, required: true },
@@ -49,8 +49,8 @@ const getBook = async (id) => {
 const createBook = async (data) => {
     try {
         await bookService.createBook(data);
-        alert("Liên hệ thêm thành công");
-        router.push({ name: "contactbook" });
+        showSuccessCreateBook();
+        router.push({ name: "book" });
     } catch (error) {
         console.log(error);
     }

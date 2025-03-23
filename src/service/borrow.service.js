@@ -1,10 +1,18 @@
 import createApiClient from "./api.service";
-class AuthorService {
-  constructor(baseUrl = "/api/admin/author") {
+class BorrowService {
+  constructor(baseUrl = "/api/admin/borrow") {
     this.api = createApiClient(baseUrl);
   }
   async getAll() {
-    return (await this.api.get("")).data;
+    return (await this.api.get("/")).data;
+  }
+
+  async getBorrowByuserId(userId) {
+    return (await this.api.get(`?userId=${userId}`)).data;
+  }
+
+  async changeStatus(statusChangeInfo) {
+    return (await this.api.post("/changestatus", statusChangeInfo)).data;
   }
 
   //   async create(data) {
@@ -23,4 +31,4 @@ class AuthorService {
   //     return (await this.api.delete(`/${id}`)).data;
   //   }
 }
-export default new AuthorService();
+export default new BorrowService();

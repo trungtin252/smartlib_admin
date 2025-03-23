@@ -32,7 +32,7 @@ const placeholderText = computed(() => {
         default: return 'Nhập tên sách...';
     }
 });
-const emit = defineEmits(['changeTest']);
+const emit = defineEmits(['changeSeach']);
 
 const props = defineProps({
     categories: Array
@@ -44,7 +44,7 @@ const searchBooks = () => {
         category: category.value,
         query: searchQuery.value
     };
-    emit("changeTest", search)
+    emit("changeSeach", search)
 };
 </script>
 

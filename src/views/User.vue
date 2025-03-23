@@ -9,7 +9,7 @@
                 <th scope="col">Ngày sinh</th>
                 <th scope="col">Địa chỉ</th>
                 <th scope="col">Số điện thoại</th>
-                <th scope="col">Thao tác</th>
+                <!-- <th scope="col">Thao tác</th> -->
             </tr>
         </thead>
         <tbody>
@@ -23,11 +23,11 @@
                 <td style="width: 10%;">{{ new Date(user.ngaySinh).toLocaleDateString() }}</td>
                 <td style="width: 23%;">{{ user.diaChi }}</td>
                 <td>{{ user.soDienThoai }}</td>
-                <td>
+                <!-- <td>
                     <button type="button" class="btn btn-outline-info btn-sm">Chi tiết</button>
                     <button type="button" class="btn btn-outline-danger btn-sm"
                         @click="deleteUser(user._id.$oid)">Xóa</button>
-                </td>
+                </td> -->
             </tr>
         </tbody>
     </table>
@@ -42,7 +42,6 @@
                 <th scope="col">Ngày sinh</th>
                 <th scope="col">Địa chỉ</th>
                 <th scope="col">Số điện thoại</th>
-                <th scope="col">Thao tác</th>
             </tr>
         </thead>
         <tbody>
