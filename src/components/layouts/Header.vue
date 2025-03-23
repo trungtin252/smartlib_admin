@@ -31,6 +31,12 @@
                                 <span>Xét duyệt yêu cầu</span>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" @click="goToHistory">
+                                <i class="fa fa-history" aria-hidden="true"></i>
+                                <span>Lịch sử yêu cầu</span>
+                            </a>
+                        </li>
                     </ul>
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
@@ -65,6 +71,10 @@ const goToUser = () => {
 
 const goToReview = () => {
     router.push('/review')
+}
+
+const goToHistory = () => {
+    router.push('/history')
 }
 </script>
 

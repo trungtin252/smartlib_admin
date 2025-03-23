@@ -28,7 +28,7 @@ class BookService {
 
   async createBook(data) {
     return (
-      await this.api.post("/", data, {
+      await this.api.post("", data, {
         headers: { "Content-Type": "multipart/form-data" },
       })
     ).data;

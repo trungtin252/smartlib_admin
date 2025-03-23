@@ -76,3 +76,28 @@ export const showSuccessCreateBook = () => {
     icon: "success",
   });
 };
+
+export const showConfimGetBook = (borrowId) => {
+  return Swal.fire({
+    title: `Xác nhận đã lấy sách ${borrowId} ?`,
+    showCancelButton: true,
+    confirmButtonText: "Ok",
+    denyButtonText: `Hủy`,
+  });
+};
+
+export const showInfo = (title, content) => {
+  Swal.fire({
+    title: title,
+    text: content,
+    icon: "info",
+  });
+};
+
+export const showError = (title, content) => {
+  Swal.fire({
+    title: title,
+    text: content,
+    icon: "error",
+  });
+};

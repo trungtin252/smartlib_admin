@@ -9,6 +9,7 @@ import { getCookie } from "@/utils/cookie";
 import BookEdit from "@/components/layouts/BookEdit.vue";
 import NotFound from "@/views/NotFound.vue";
 import BookList from "@/components/layouts/BookList.vue";
+import History from "@/views/History.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -55,6 +56,12 @@ const router = createRouter({
       path: "/review",
       name: "review",
       component: Review,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: "/history",
+      name: "history",
+      component: History,
       meta: { requiresAuth: true },
     },
     { path: "/login", name: "login", component: Login },

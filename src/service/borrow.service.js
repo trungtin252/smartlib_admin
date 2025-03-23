@@ -15,6 +15,10 @@ class BorrowService {
     return (await this.api.post("/changestatus", statusChangeInfo)).data;
   }
 
+  async deleteBorrow(id) {
+    return (await this.api.delete(`/${id}`)).data;
+  }
+
   //   async create(data) {
   //     return (await this.api.post("/", data)).data;
   //   }

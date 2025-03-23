@@ -1,10 +1,11 @@
 <template>
     <!-- <h3>Danh sách yêu cầu</h3> -->
     <Filter v-model:selectedStatus="selectedStatus" />
-    <table class="table table-striped table-hover table-bordered ">
+    <button type="button" class="btn btn-primary" @click="openScanner">Quét QR</button>
+    <table class=" table table-striped table-hover table-bordered ">
         <thead>
             <tr>
-                <th scope="col" class="id">Mã yêu cầu</th>
+                <th scope=" col" class="id">Mã yêu cầu</th>
                 <th scope="col">Mã sách</th>
                 <th scope="col">Tên sách</th>
                 <th scope="col">Độc giả</th>
@@ -15,11 +16,11 @@
         </thead>
         <tbody>
             <tr v-for="borrow in filteredBorrows" :key="borrow._id">
-                <th scope="row" class="id">{{ borrow._id }}</th>
+                <th scope="row" class="id">{{ borrow.maYeuCau }}</th>
                 <td>{{ borrow.sach.maSach }}</td>
                 <td>{{ borrow.sach.tieuDe }}</td>
                 <td>{{ borrow.docGia.maDocGia }}</td>
-                <td>{{ borrow.ngayMuon }}</td>
+                <td>{{ formatDate(borrow.ngayMuon) }}</td>
                 <td>
                     <span v-if="borrow.trangThai == 'chap_nhan'" class="badge text-bg-success">
                         Chấp nhận
@@ -66,25 +67,50 @@
             </tr>
         </tbody>
     </table>
+
+    <QRScan ref="qrScanner" @qr-scanned="handleQrResult" />
 </template>
 
 <script setup>
 import borrowService from '@/service/borrow.service';
-import { showComfirm, showNoteDeniBorrow } from '@/utils/Alert';
+import { showComfirm, showConfimGetBook, showError, showInfo, showNoteDeniBorrow } from '@/utils/Alert';
 import { computed, onMounted, ref, watch } from 'vue';
-import { format } from "date-fns"; // Import date-fns
 import Filter from '@/components/Hooks/Filter.vue';
+import { formatDate } from '@/utils/fomatDate';
+import QRScan from '@/components/Hooks/QRScan.vue';
 
 const borrows = ref([]);
 const selectedStatus = ref('');
+const qrScanner = ref(null);
+
+const openScanner = () => {
+    qrScanner.value.startCamera();
+};
+
+const handleQrResult = async (result) => {
+    try {
+        const qrData = JSON.parse(result);
+        const borrowId = qrData.borrowId;
+        const secretCode = qrData.secretCode;
+
+        for (const borrow of borrows.value) {
+            if (borrowId && borrowId === borrow._id && borrow.trangThai === 'chap_nhan' && borrow.maBiMat === secretCode) {
+                await handleTakenBook(borrow._id, borrow.maYeuCau);
+                return;
+            }
+        }
+
+        showError("Quét thất bại", "Không tìm thấy yêu cầu hoặc đã lấy sách trước đó, vui lòng kiểm tra lại");
+    } catch (error) {
+        showError("Lỗi đọc mã QR", "Mã QR không hợp lệ hoặc đã bị thay đổi.");
+        console.error("Lỗi khi parse JSON:", error);
+    }
+};
 
 const getAllBorrow = async () => {
     try {
         const response = await borrowService.getAll();
-        borrows.value = response.map(borrow => ({
-            ...borrow,
-            ngayMuon: format(new Date(borrow.ngayMuon), "dd/MM/yyyy HH:mm")
-        }));
+        borrows.value = response.filter(borrow => borrow.trangThai !== 'hoan_thanh');
     } catch (error) {
         console.error('Lỗi :', error);
     }
@@ -128,8 +154,8 @@ const reject = async (id) => {
     }
 }
 
-const handleTakenBook = async (id) => {
-    const result = await showComfirm();
+const handleTakenBook = async (id, maYeuCau) => {
+    const result = await showConfimGetBook(maYeuCau);
     if (result.isConfirmed) {
         const statusChangeInfo = {
             id: id,
@@ -140,6 +166,7 @@ const handleTakenBook = async (id) => {
         getAllBorrow();
     }
 }
+
 
 const handleReturnBook = async (id) => {
     const result = await showComfirm();
@@ -160,7 +187,10 @@ onMounted(() => getAllBorrow())
 </script>
 
 <style scoped>
-.btn {
+.btn-outline-danger,
+.btn-outline-primary,
+.btn-outline-secondary,
+.btn-outline-success {
     --bs-btn-padding-y: .2px;
     --bs-btn-padding-x: .5rem;
     --bs-btn-font-size: .75rem;
