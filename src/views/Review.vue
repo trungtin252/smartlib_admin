@@ -1,7 +1,7 @@
 <template>
     <!-- <h3>Danh sách yêu cầu</h3> -->
     <Filter v-model:selectedStatus="selectedStatus" v-model:searchRequestId="searchRequestId" />
-    <button type="button" class="btn btn-primary" @click="openScanner">Quét QR</button>
+    <button type="button" class="btn btn-primary" @click="openScanner" style="margin-bottom: 20px;">Quét QR</button>
     <table class=" table table-striped table-hover table-bordered ">
         <thead>
             <tr>
@@ -59,11 +59,6 @@
                             sách
                             <!-- <i class="fa-solid fa-xmark"></i> -->
                         </button>
-                        <button v-if="borrow.trangThai == 'tu_choi'" type="button"
-                            class="btn btn-outline-danger btn-sm delete" @click="handleReturnBook(borrow._id)">Xóa
-                            yêu cầu
-                            <!-- <i class="fa-solid fa-xmark"></i> -->
-                        </button>
                     </div>
                 </td>
             </tr>
@@ -75,7 +70,7 @@
 
 <script setup>
 import borrowService from '@/service/borrow.service';
-import { showComfirm, showConfimGetBookAuto, showError, showNoteDeniBorrow, showSuccess } from '@/utils/Alert';
+import { showComfirm, showConfimGetBookAuto, showConfimGetBookManual, showError, showNoteDeniBorrow, showSuccess } from '@/utils/Alert';
 import { computed, onMounted, ref, watch } from 'vue';
 import Filter from '@/components/Hooks/Filter.vue';
 import { formatDate } from '@/utils/fomatDate';
@@ -132,10 +127,9 @@ const filteredBorrows = computed(() => {
 });
 
 
-watch(filteredBorrows, (newValue) => {
+watch(filteredBorrows, (newBorrow) => {
     getAllBorrow();
-}
-)
+});
 
 const approve = async (id) => {
     const result = await showComfirm();
@@ -164,7 +158,7 @@ const reject = async (id) => {
 }
 
 const handleTakenBookManual = async (id, maYeuCau, maSach, tieuDe, viTri, maBiMat) => {
-    const result = await showConfimGetBook(maYeuCau, maSach, tieuDe, viTri);
+    const result = await showConfimGetBookManual(maYeuCau, maSach, tieuDe, viTri);
     if (result.value == maBiMat) {
         const statusChangeInfo = {
             id: id,
@@ -202,9 +196,8 @@ const handleReturnBook = async (id) => {
 
         const statusChangeInfo = {
             id: id,
-            newstatus: 'da_tra',
+            newstatus: 'hoan_thanh',
         }
-        console.log("Da tra")
         await borrowService.changeStatus(statusChangeInfo);
         getAllBorrow();
     }

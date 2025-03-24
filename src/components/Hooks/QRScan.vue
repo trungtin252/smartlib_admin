@@ -1,6 +1,6 @@
 <template>
-    <div v-if="isCameraOpen">
-        <video ref="video" style="width: 400px; height: 500px;" autoplay></video>
+    <div v-if="isCameraOpen" class="camera">
+        <video ref="video" style="width: 800px; height: 500px;" autoplay></video>
         <canvas ref="canvas" style="display: none;"></canvas>
         <button @click="closeCamera">Đóng Camera</button>
     </div>
@@ -79,3 +79,27 @@ const scanFrame = () => {
 // Cho phép component cha có thể gọi mở camera
 defineExpose({ startCamera });
 </script>
+
+<style scoped>
+.camera {
+    display: flex;
+    flex-direction: column;
+}
+
+button {
+    margin-top: 10px;
+    width: 150px;
+    padding: 10px 15px;
+    font-size: 16px;
+    background-color: #d9534f;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+}
+
+button:hover {
+    background-color: #c9302c;
+}
+</style>
