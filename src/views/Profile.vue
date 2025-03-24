@@ -5,10 +5,10 @@
                 <div class="avatar-container">
                     <img :src="staffInfo.anhDaiDien" class="rounded-circle border img-thumbnail" width="150"
                         height="150" alt="Avatar">
-                    <label class="edit-avatar">
+                    <!-- <label class="edit-avatar">
                         <i class="fa-solid fa-pen"></i>
                         <input type="file" class="d-none" @change="uploadAvatar">
-                    </label>
+                    </label> -->
                 </div>
 
             </div>
@@ -20,7 +20,7 @@
                     <div class="col-md-6">
                         <p><strong>Mã nhân viên:</strong> {{ staffInfo.maNhanVien }}</p>
                         <p><strong>Số điện thoại:</strong> {{ staffInfo.soDienThoai }}</p>
-                        <!-- <p><strong>Giới tính:</strong> Nam</p> -->
+                        <p><strong>Vai trò:</strong> {{ staffInfo.vaiTro }}</p>
                     </div>
                     <div class="col-md-6">
                         <p><strong>Ngày sinh:</strong> {{ staffInfo.ngaySinh }}</p>

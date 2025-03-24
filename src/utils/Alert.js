@@ -77,12 +77,51 @@ export const showSuccessCreateBook = () => {
   });
 };
 
-export const showConfimGetBook = (borrowId) => {
+export const showConfimGetBookManual = async (
+  maYeuCau,
+  maSach,
+  tieuDe,
+  viTri
+) => {
   return Swal.fire({
-    title: `Xác nhận đã lấy sách ${borrowId} ?`,
+    title: `Xác nhận đã lấy sách của yêu cầu <strong>${maYeuCau}</strong>?`,
+    html: `
+      <p><strong>Mã sách:</strong> ${maSach}</p>
+      <p><strong>Tên sách:</strong> ${tieuDe}</p>
+      <p><strong>Vị trí trong kệ:</strong> ${viTri}</p>
+    `,
+    input: "password",
+    inputPlaceholder: "Nhập mật khẩu xác nhận",
+    inputAttributes: {
+      autocapitalize: "off",
+      autocomplete: "new-password",
+    },
+    icon: "question",
     showCancelButton: true,
-    confirmButtonText: "Ok",
-    denyButtonText: `Hủy`,
+    confirmButtonText: "Xác nhận",
+    cancelButtonText: "Hủy",
+    showLoaderOnConfirm: true,
+    preConfirm: (password) => {
+      if (!password) {
+        Swal.showValidationMessage("Bạn phải nhập mật khẩu để xác nhận");
+      }
+      return password;
+    },
+  });
+};
+
+export const showConfimGetBookAuto = (maYeuCau, maSach, tieuDe, viTri) => {
+  return Swal.fire({
+    title: `Xác nhận đã lấy sách của yêu cầu <strong>${maYeuCau}</strong>?`,
+    html: `
+      <p><strong>Mã sách:</strong> ${maSach}</p>
+      <p><strong>Tên sách:</strong> ${tieuDe}</p>
+      <p><strong>Vị trí trong kệ:</strong> ${viTri}</p>
+    `,
+    icon: "question",
+    showCancelButton: true,
+    confirmButtonText: "Xác nhận",
+    cancelButtonText: "Hủy",
   });
 };
 
@@ -99,5 +138,13 @@ export const showError = (title, content) => {
     title: title,
     text: content,
     icon: "error",
+  });
+};
+
+export const showSuccess = (title, content) => {
+  Swal.fire({
+    title: title,
+    text: content,
+    icon: "success",
   });
 };

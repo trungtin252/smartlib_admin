@@ -7,6 +7,7 @@
             <option value="tu_choi">Từ chối</option>
             <option value="">Tất cả</option>
         </select>
+        <input v-model="search" type="text" class="form-control" placeholder="Nhập mã yêu cầu cần tìm" />
     </div>
 </template>
 
@@ -14,13 +15,21 @@
 import { defineProps, defineEmits, ref, watch } from 'vue';
 
 const props = defineProps({
-    selectedStatus: String
+    selectedStatus: String,
+    searchRequestId: String
 });
-const emit = defineEmits(['update:selectedStatus']);
+
+const emit = defineEmits(['update:selectedStatus', 'update:searchRequestId']);
+
 const status = ref(props.selectedStatus);
+const search = ref(props.searchRequestId);
 
 watch(status, (newValue) => {
     emit('update:selectedStatus', newValue);
+});
+
+watch(search, (newValue) => {
+    emit('update:searchRequestId', newValue);
 });
 </script>
 

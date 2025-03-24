@@ -1,4 +1,5 @@
 <template>
+    <button @click="handleDeleteAllHistory" class="btn btn-danger" style="margin: 10px 0;">Xóa tất cả</button>
     <table class="table table-striped table-hover table-bordered ">
         <thead>
             <tr>
@@ -19,8 +20,11 @@
                 <td>{{ borrow.docGia.maDocGia }}</td>
                 <td>{{ formatDate(borrow.ngayMuon) }}</td>
                 <td>
-                    <span class="badge text-bg-primary">
+                    <span v-if="borrow.trangThai == 'hoan_thanh'" class="badge text-bg-primary">
                         Đã hoàn thành
+                    </span>
+                    <span v-if="borrow.trangThai == 'da_huy'" class="badge text-bg-danger">
+                        Đã hủy
                     </span>
 
                 </td>
@@ -28,8 +32,7 @@
                     <div class="form-check">
 
                         <button type="button" class="btn btn-outline-danger btn-sm delete"
-                            @click="handleDeleteBorrow(borrow._id)">Xóa
-                            yêu cầu
+                            @click="handleDeleteBorrow(borrow._id)">Xóa vĩnh viễn khỏi lịch sử
                             <!-- <i class="fa-solid fa-xmark"></i> -->
                         </button>
                     </div>
@@ -51,7 +54,7 @@ const selectedStatus = ref('');
 const getAllBorrow = async () => {
     try {
         const response = await borrowService.getAll();
-        borrows.value = response.filter(borrow => borrow.trangThai == 'hoan_thanh');
+        borrows.value = response.filter(borrow => (borrow.trangThai == 'hoan_thanh' || borrow.trangThai == 'da_huy'));
     } catch (error) {
         console.error('Lỗi :', error);
     }
@@ -76,6 +79,16 @@ const handleDeleteBorrow = async (id) => {
     }
 }
 
+const handleDeleteAllHistory = async () => {
+    const result = await showComfirm();
+    if (result.isConfirmed) {
+        const test = filteredBorrows.value;
+        test.forEach(element => {
+            borrowService.deleteBorrow(element._id);
+        });
+    }
+}
+
 
 onMounted(() => getAllBorrow())
 
@@ -83,7 +96,7 @@ onMounted(() => getAllBorrow())
 </script>
 
 <style scoped>
-.btn {
+.btn-outline-danger {
     --bs-btn-padding-y: .2px;
     --bs-btn-padding-x: .5rem;
     --bs-btn-font-size: .75rem;

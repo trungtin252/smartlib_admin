@@ -1,6 +1,6 @@
 <template>
     <!-- <h3>Danh sách yêu cầu</h3> -->
-    <Filter v-model:selectedStatus="selectedStatus" />
+    <Filter v-model:selectedStatus="selectedStatus" v-model:searchRequestId="searchRequestId" />
     <button type="button" class="btn btn-primary" @click="openScanner">Quét QR</button>
     <table class=" table table-striped table-hover table-bordered ">
         <thead>
@@ -48,7 +48,9 @@
                             <i class="fa-solid fa-xmark"></i>
                         </button>
                         <button v-if="borrow.trangThai == 'chap_nhan'" type="button"
-                            class="btn btn-outline-primary btn-sm taken" @click="handleTakenBook(borrow._id)">Đã lấy
+                            class="btn btn-outline-primary btn-sm taken"
+                            @click="handleTakenBookManual(borrow._id, borrow.maYeuCau, borrow.sach.maSach, borrow.sach.tieuDe, borrow.sach.viTri, borrow.maBiMat)">Đã
+                            lấy
                             sách
                             <!-- <i class="fa-solid fa-xmark"></i> -->
                         </button>
@@ -73,7 +75,7 @@
 
 <script setup>
 import borrowService from '@/service/borrow.service';
-import { showComfirm, showConfimGetBook, showError, showInfo, showNoteDeniBorrow } from '@/utils/Alert';
+import { showComfirm, showConfimGetBookAuto, showError, showNoteDeniBorrow, showSuccess } from '@/utils/Alert';
 import { computed, onMounted, ref, watch } from 'vue';
 import Filter from '@/components/Hooks/Filter.vue';
 import { formatDate } from '@/utils/fomatDate';
@@ -82,11 +84,13 @@ import QRScan from '@/components/Hooks/QRScan.vue';
 const borrows = ref([]);
 const selectedStatus = ref('');
 const qrScanner = ref(null);
+const searchRequestId = ref("");
 
 const openScanner = () => {
     qrScanner.value.startCamera();
 };
 
+// Xử lý quét QR
 const handleQrResult = async (result) => {
     try {
         const qrData = JSON.parse(result);
@@ -95,7 +99,7 @@ const handleQrResult = async (result) => {
 
         for (const borrow of borrows.value) {
             if (borrowId && borrowId === borrow._id && borrow.trangThai === 'chap_nhan' && borrow.maBiMat === secretCode) {
-                await handleTakenBook(borrow._id, borrow.maYeuCau);
+                await handleTakenBookAuto(borrow._id, borrow.maYeuCau, borrow.sach.maSach, borrow.sach.tieuDe, borrow.sach.viTri, borrow.maBiMat);
                 return;
             }
         }
@@ -107,18 +111,24 @@ const handleQrResult = async (result) => {
     }
 };
 
+
+// Get borrow
 const getAllBorrow = async () => {
     try {
         const response = await borrowService.getAll();
-        borrows.value = response.filter(borrow => borrow.trangThai !== 'hoan_thanh');
+        borrows.value = response.filter(borrow => (borrow.trangThai !== 'hoan_thanh' && borrow.trangThai !== 'da_huy'));
     } catch (error) {
         console.error('Lỗi :', error);
     }
 }
 
+// Lọc
 const filteredBorrows = computed(() => {
-    if (!selectedStatus.value) return borrows.value;
-    return borrows.value.filter(borrow => borrow.trangThai === selectedStatus.value);
+    return borrows.value.filter(borrow => {
+        const matchStatus = !selectedStatus.value || borrow.trangThai === selectedStatus.value;
+        const matchSearch = !searchRequestId.value || borrow.maYeuCau.toLowerCase().includes(searchRequestId.value.toLowerCase());
+        return matchStatus && matchSearch;
+    });
 });
 
 
@@ -126,7 +136,6 @@ watch(filteredBorrows, (newValue) => {
     getAllBorrow();
 }
 )
-
 
 const approve = async (id) => {
     const result = await showComfirm();
@@ -154,8 +163,24 @@ const reject = async (id) => {
     }
 }
 
-const handleTakenBook = async (id, maYeuCau) => {
-    const result = await showConfimGetBook(maYeuCau);
+const handleTakenBookManual = async (id, maYeuCau, maSach, tieuDe, viTri, maBiMat) => {
+    const result = await showConfimGetBook(maYeuCau, maSach, tieuDe, viTri);
+    if (result.value == maBiMat) {
+        const statusChangeInfo = {
+            id: id,
+            newstatus: 'da_lay',
+            takenDay: new Date()
+        }
+        await borrowService.changeStatus(statusChangeInfo);
+        showSuccess("Lấy sách thành công", "Đã lấy sách thành công !");
+        getAllBorrow();
+    } else {
+        showError("Lấy sách thất bại", " Sai mã bí mật lấy sách vui lòng kiểm tra lại");
+    }
+}
+
+const handleTakenBookAuto = async (id, maYeuCau, maSach, tieuDe, viTri) => {
+    const result = await showConfimGetBookAuto(maYeuCau, maSach, tieuDe, viTri);
     if (result.isConfirmed) {
         const statusChangeInfo = {
             id: id,
@@ -163,7 +188,10 @@ const handleTakenBook = async (id, maYeuCau) => {
             takenDay: new Date()
         }
         await borrowService.changeStatus(statusChangeInfo);
+        showSuccess("Lấy sách thành công", "Đã lấy sách thành công !");
         getAllBorrow();
+    } else {
+        showError("Lấy sách thất bại", " Sai mã bí mật lấy sách vui lòng kiểm tra lại");
     }
 }
 
@@ -171,10 +199,12 @@ const handleTakenBook = async (id, maYeuCau) => {
 const handleReturnBook = async (id) => {
     const result = await showComfirm();
     if (result.isConfirmed) {
+
         const statusChangeInfo = {
             id: id,
             newstatus: 'da_tra',
         }
+        console.log("Da tra")
         await borrowService.changeStatus(statusChangeInfo);
         getAllBorrow();
     }

@@ -16,6 +16,10 @@
             <ErrorMessage name="desc" class="error-feedback" />
         </div>
         <div class="form-group">
+            <label for="location">Vị trí trong thư viện</label>
+            <Field name="location" type="text" class="form-control" v-model="bookLocal.viTri" />
+        </div>
+        <div class="form-group">
             <label for="numberInLib">Số lượng trong thư viện</label>
             <Field name="numberInLib" type="number" class="form-control" v-model="bookLocal.soLuongTrongThuVien"
                 :min="1" />
@@ -111,7 +115,6 @@ const props = defineProps({
 watch(() => props.book, (newBook) => {
     if (!!newBook && Object.keys(newBook).length > 0) {
         bookLocal.value = { ...newBook };
-        console.log(bookLocal.value);
         previewImage.value = newBook.hinhAnh
     } else {
         bookLocal.value = {
@@ -124,6 +127,7 @@ watch(() => props.book, (newBook) => {
             tacGia: "",
             theLoai: "",
             gia: "",
+            viTri: "",
             hinhAnh: ""
         };
         previewImage.value = "";
