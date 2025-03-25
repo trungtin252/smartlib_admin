@@ -1,5 +1,6 @@
 .container-fluid {
-    max-width: 1200px;
-    background-color: rgb(255, 255, 255);
+    max-width: 1600px;
+    background-color: rgb(158, 197, 235);
     min-height: 100vh;
+    padding-top: 10px;
 }

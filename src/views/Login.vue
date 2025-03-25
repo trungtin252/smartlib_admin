@@ -88,8 +88,6 @@ const login = async () => {
 
 
 const setisAuthenticated = (userId) => {
-    const token = generateToken();
-    setCookie("token", token, 1);
     setCookie("staffId", userId, 1);
     router.push("/profile");
     showSuccessLogin();

@@ -2,7 +2,7 @@
     <div class="sort" style="margin-bottom: 20px">
         <select class="form-select" aria-label="Default select example" style="width: 200px; display: inline;"
             v-model="sortValue">
-            <option value="ngayThem">Ngày thêm tăng dần</option>
+            <option value="ngayThem">Ngày thêm gần nhất</option>
             <option value="maSach">Mã sách tăng dần</option>
             <option value="tieuDe">Tên sách từ A- Z</option>
             <option value="soLuongTrongThuVien">Số lượng tăng dần</option>

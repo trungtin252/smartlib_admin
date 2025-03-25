@@ -1,18 +1,14 @@
 <template>
-
     <div class="header bg-light">
         <div class="container-fluid bg-light">
-
-            <nav class="navbar navbar-expand-lg navbar-light ">
-
+            <nav class="navbar navbar-expand-lg navbar-light">
                 <!-- Logo -->
                 <a class="navbar-brand logo-container" @click="goToDashboard">
                     <img src="../../assets/logo.svg" alt="SmartLib_logo" id="logo" />
                 </a>
 
-
                 <div v-if="isLogin" class="collapse navbar-collapse menu-items" id="navbarNav">
-                    <ul class="navbar-nav ms-auto">
+                    <!-- <ul class="navbar-nav ms-auto nav-menu">
                         <li class="nav-item">
                             <a class="nav-link" @click="goToUser">
                                 <i class="fa-solid fa-users"></i>
@@ -37,7 +33,7 @@
                                 <span>Lịch sử yêu cầu</span>
                             </a>
                         </li>
-                    </ul>
+                    </ul> -->
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
                             <profile-header></profile-header>
@@ -46,6 +42,11 @@
                 </div>
             </nav>
         </div>
+    </div>
+
+    <div class="d-flex">
+        <!-- Sidebar -->
+        <SideBar v-if="isLogin" />
     </div>
 </template>
 
@@ -70,11 +71,11 @@ const goToUser = () => {
 };
 
 const goToReview = () => {
-    router.push('/review')
+    router.push('/review');
 }
 
 const goToHistory = () => {
-    router.push('/history')
+    router.push('/history');
 }
 </script>
 
@@ -86,7 +87,6 @@ const goToHistory = () => {
 .container-fluid {
     min-height: 20px;
 }
-
 
 .navbar {
     padding: 10px 15px;
@@ -106,19 +106,13 @@ const goToHistory = () => {
 
 .menu-items {
     display: flex;
-    align-items: center;
+    align-items: start;
 }
-
 
 .navbar-nav {
     display: flex;
     align-items: center;
     gap: 20px;
-}
-
-
-.search-container {
-    margin-right: 0;
 }
 
 .nav-link {
@@ -127,6 +121,21 @@ const goToHistory = () => {
     gap: 10px;
     cursor: pointer;
     transition: all 0.3s ease;
+    padding: 8px 12px;
+    border-radius: 5px;
+}
+
+.nav-link:hover {
+    background-color: #6c828f;
+}
+
+.d-flex {
+    display: flex;
+}
+
+.content {
+    flex-grow: 1;
+    padding: 20px;
 }
 
 @media (max-width: 992px) {
@@ -138,10 +147,6 @@ const goToHistory = () => {
     .navbar-nav {
         flex-direction: column;
         gap: 10px;
-    }
-
-    .search-container {
-        margin-bottom: 10px;
     }
 }
 </style>

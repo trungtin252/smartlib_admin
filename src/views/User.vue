@@ -55,12 +55,6 @@
                 <td style="width: 10%;">{{ new Date(staff.ngaySinh).toLocaleDateString() }}</td>
                 <td style="width: 23%;">{{ staff.diaChi }}</td>
                 <td>{{ staff.soDienThoai }}</td>
-                <td>
-                    <button type=" button" class="btn btn-outline-info btn-sm" v-if="staff.vaiTro !== 'admin'">Chi
-                        tiết</button>
-                    <button type="button" class="btn btn-outline-danger btn-sm" @click="deleteUser(user._id.$oid)"
-                        v-if="staff.vaiTro !== 'admin'">Xóa</button>
-                </td>
             </tr>
         </tbody>
     </table>

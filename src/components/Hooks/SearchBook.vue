@@ -51,7 +51,7 @@ const searchBooks = () => {
 <style scoped>
 .search-container {
     max-width: 1000px;
-    margin: 20px auto;
+    margin: 10px 0px;
     border-radius: 8px;
 }
 

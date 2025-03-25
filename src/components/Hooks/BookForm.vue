@@ -279,4 +279,8 @@ label {
     height: 100%;
     object-fit: cover;
 }
+
+label {
+    font-weight: bold;
+}
 </style>

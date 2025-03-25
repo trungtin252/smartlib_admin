@@ -1,10 +1,8 @@
 <template>
-    <h3>Danh sách sách</h3>
     <div class="search_container">
         <SearchBook @changeSeach="changeSeach" :categories="categories"></SearchBook>
         <Sort v-model:sortValue="sortValue"></Sort>
     </div>
-
     <div class="table-container">
         <table class="table table-responsive-lg table-striped table-hover table-bordered">
             <thead>

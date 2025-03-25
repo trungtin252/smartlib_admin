@@ -21,7 +21,7 @@ import { ref, computed } from "vue";
 import { useRouter } from "vue-router";
 import Swal from "sweetalert2";
 import DefaultAvatar from "@/assets/logo.svg"
-import { deleteAllCookie } from "@/utils/cookie";
+import { deleteAllCookie, deleteCookie } from "@/utils/cookie";
 const router = useRouter();
 
 // Giả sử user có dữ liệu avatar từ API hoặc local storage
@@ -47,7 +47,7 @@ const logout = async () => {
     });
 
     if (result.isConfirmed) {
-        deleteAllCookie();
+        deleteCookie("staffId");
         router.push("/login");
         setTimeout(() => window.location.reload(), 1);
     }
