@@ -28,8 +28,8 @@
                     </div>
                 </div>
 
-                <!-- <router-link :to="{ name: 'editprofile' }"><button class="btn btn-primary w-100 mt-3">Chỉnh sửa thông
-                        tin</button></router-link> -->
+                <router-link :to="{ name: 'dashboard' }"><button class="btn btn-primary w-100 mt-3">Đi đến
+                        dashboard</button></router-link>
             </div>
         </div>
     </div>

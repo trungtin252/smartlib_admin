@@ -79,12 +79,12 @@
 
         </div>
 
-        <div class="form-group">
-            <button class="btn btn-primary">Lưu</button>
+        <div class="form-group-btn">
+            <button class="btn btn-success">Lưu</button>
             <button v-if="bookLocal._id" type="button" class="ml-2 btn btn-danger" @click="deleteBook">
                 Xóa
             </button>
-            <button type="button" class="ml-2 btn btn-danger" @click="cancel">
+            <button type="button" class="ml-2 btn btn-primary" @click="cancel">
                 Thoát
             </button>
         </div>
@@ -147,8 +147,8 @@ const bookFormSchema = yup.object().shape({
         .required("Số lượng không được để trống"),
     pageCount: yup
         .number()
-        .typeError("Số trang phải là số")
-        .min(0, "Số trang phải lớn hơn hoặc bằng 5")
+        .typeError("Số trang không được bỏ trống")
+        .min(1, "Số trang phải lớn hơn hoặc bằng 1")
         .required("Số trang không được để trống"),
     author: yup.string().required("Tác giả không được để trống"),
     price: yup
@@ -282,5 +282,12 @@ label {
 
 label {
     font-weight: bold;
+}
+
+.form-group-btn {
+    margin-top: 5px;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
 }
 </style>

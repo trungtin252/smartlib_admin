@@ -1,4 +1,5 @@
 <template>
+    <!-- <h3>Danh sách yêu cầu</h3> -->
     <Filter v-model:selectedStatus="selectedStatus" v-model:searchRequestId="searchRequestId" />
     <button type="button" class="btn btn-primary" @click="openScanner" style="margin-bottom: 20px;">Quét QR</button>
     <table class=" table table-striped table-hover table-bordered ">
