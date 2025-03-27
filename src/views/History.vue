@@ -8,6 +8,8 @@
                 <th scope="col">Tên sách</th>
                 <th scope="col">Độc giả</th>
                 <th scope="col">Thời gian yêu cầu</th>
+                <th scope="col">Ngày lấy sách</th>
+                <th scope="col">Ngày trả</th>
                 <th scope="col">Trạng thái</th>
                 <th scope="col" class="check">Thao tác</th>
             </tr>
@@ -19,6 +21,8 @@
                 <td>{{ borrow.sach.tieuDe }}</td>
                 <td>{{ borrow.docGia.maDocGia }}</td>
                 <td>{{ formatDate(borrow.ngayMuon) }}</td>
+                <td>{{ formatDate(borrow.ngayLaySach) }}</td>
+                <td>{{ formatDate(borrow.ngayTra) }}</td>
                 <td>
                     <span v-if="borrow.trangThai == 'hoan_thanh'" class="badge text-bg-primary">
                         Đã hoàn thành
